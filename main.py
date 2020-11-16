@@ -5,7 +5,6 @@ import operator
 links = pd.read_csv('arquivos/links.csv', index_col=['movieId'])
 filmes = pd.read_csv('arquivos/movies.csv', index_col=['movieId'])
 notas = pd.read_csv('arquivos/ratings.csv')
-tags = pd.read_csv('arquivos/tags.csv', index_col=['movieId'])
 
 filmes['genres'] = filmes['genres'].str.split('|')
 
@@ -67,11 +66,10 @@ def recomenda(n):
 
 def main():
     lista_generos()
-    filmes_assistidos(1)
+    filmes_assistidos(2)
     top_generos(5)
     recomenda(10)
     print(recomendados)
-    print(len(recomendados))
 
 
 main()
