@@ -23,4 +23,5 @@ class DataBase:
     def execute(self, sql):
         self.__connect__()
         self.cursor.execute(sql)
+        self.con.commit()
         self.__disconnect__()

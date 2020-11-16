@@ -1,6 +1,9 @@
 import pandas as pd
 import random
 import operator
+import db
+
+db = db.DataBase()
 
 links = pd.read_csv('arquivos/links.csv', index_col=['movieId'])
 filmes = pd.read_csv('arquivos/movies.csv', index_col=['movieId'])
@@ -50,7 +53,7 @@ def top_generos(n):
 
 def recomenda(n):
     while n > 0:
-        if n > 3:
+        if n > 30:
             i = random.choice(filmesId)
             for j in filmes['genres'][i]:
                 if j in topGeneros and i not in filmesAssistidos and i not in recomendados:
@@ -64,12 +67,33 @@ def recomenda(n):
                     n -= 1
 
 
+def inserir_dados(userid):
+
+    filmes_assistidos(userid)
+    top_generos(5)
+    recomenda(100)
+
+    recomendados_str = str(recomendados).strip('[]')
+    sql = f"INSERT INTO recomendados (filmes) VALUES ('{recomendados_str}')"
+    db.execute(sql)
+
+
+def limpar_listas():
+    recomendados.clear()
+    topGeneros.clear()
+    generosA.clear()
+    filmesAssistidos.clear()
+
+    for i in generos.keys():
+        generos[i] = 0
+
+
 def main():
     lista_generos()
-    filmes_assistidos(2)
-    top_generos(5)
-    recomenda(10)
-    print(recomendados)
 
+    for i in range(400):
+        limpar_listas()
+        inserir_dados(i + 1)
+        
 
 main()
