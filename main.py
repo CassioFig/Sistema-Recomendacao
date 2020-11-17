@@ -1,11 +1,8 @@
 import pandas as pd
 import random
 import operator
-import db
+import json
 
-db = db.DataBase()
-
-links = pd.read_csv('arquivos/links.csv', index_col=['movieId'])
 filmes = pd.read_csv('arquivos/movies.csv', index_col=['movieId'])
 notas = pd.read_csv('arquivos/ratings.csv')
 
@@ -19,6 +16,7 @@ topGeneros = []
 generosA = []
 recomendados = []
 
+dados = []
 
 def lista_generos():
     for generosLista in filmes['genres']:
@@ -68,14 +66,14 @@ def recomenda(n):
 
 
 def inserir_dados(userid):
-
     filmes_assistidos(userid)
     top_generos(5)
     recomenda(100)
 
     recomendados_str = str(recomendados).strip('[]')
-    sql = f"INSERT INTO recomendados (filmes) VALUES ('{recomendados_str}')"
-    db.execute(sql)
+    dados_user = {'userId': userid, 'filmes': recomendados_str}
+
+    dados.append(dados_user)
 
 
 def limpar_listas():
@@ -88,12 +86,19 @@ def limpar_listas():
         generos[i] = 0
 
 
+def escreve_json():
+    with open('dados.json', 'w') as f:
+        json.dump(dados, f)
+
+
 def main():
     lista_generos()
 
-    for i in range(400):
+    for i in range(610):
         limpar_listas()
         inserir_dados(i + 1)
+
+    escreve_json()
         
 
 main()
