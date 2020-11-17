@@ -56,13 +56,24 @@ def recomenda(n):
             i = random.choice(filmesId)
             for j in filmes['genres'][i]:
                 if j in topGeneros and i not in filmesAssistidos and i not in recomendados:
-                    recomendados.append(f"tt0{links['imdbId'][i]}")
+                    if len(str(links['imdbId'][i])) == 7:
+                        recomendados.append(f"tt{links['imdbId'][i]}")
+                    elif len(str(links['imdbId'][i])) == 6:
+                        recomendados.append(f"tt0{links['imdbId'][i]}")
+                    elif len(str(links['imdbId'][i])) == 5:
+                        recomendados.append(f"tt00{links['imdbId'][i]}")
+
                     n -= 1
         else:
             i = random.choice(filmesId)
             for j in filmes['genres'][i]:
                 if j in generosA and i not in filmesAssistidos and i not in recomendados:
-                    recomendados.append(f"tt0{links['imdbId'][i]}")
+                    if len(str(links['imdbId'][i])) == 7:
+                        recomendados.append(f"tt{links['imdbId'][i]}")
+                    elif len(str(links['imdbId'][i])) == 6:
+                        recomendados.append(f"tt0{links['imdbId'][i]}")
+                    elif len(str(links['imdbId'][i])) == 5:
+                        recomendados.append(f"tt00{links['imdbId'][i]}")
                     n -= 1
 
 
