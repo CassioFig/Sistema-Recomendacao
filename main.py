@@ -5,6 +5,7 @@ import json
 
 filmes = pd.read_csv('arquivos/movies.csv', index_col=['movieId'])
 notas = pd.read_csv('arquivos/ratings.csv')
+links = pd.read_csv('arquivos/links.csv', index_col=['movieId'])
 
 filmes['genres'] = filmes['genres'].str.split('|')
 
@@ -55,13 +56,13 @@ def recomenda(n):
             i = random.choice(filmesId)
             for j in filmes['genres'][i]:
                 if j in topGeneros and i not in filmesAssistidos and i not in recomendados:
-                    recomendados.append(i)
+                    recomendados.append(f"tt0{links['imdbId'][i]}")
                     n -= 1
         else:
             i = random.choice(filmesId)
             for j in filmes['genres'][i]:
                 if j in generosA and i not in filmesAssistidos and i not in recomendados:
-                    recomendados.append(i)
+                    recomendados.append(f"tt0{links['imdbId'][i]}")
                     n -= 1
 
 
@@ -87,7 +88,7 @@ def limpar_listas():
 
 
 def escreve_json():
-    with open('dados.json', 'w') as f:
+    with open('dados2.json', 'w') as f:
         json.dump(dados, f)
 
 
