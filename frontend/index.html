@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="estilo.css">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <title>Recomendações</title>
+
+    <script>
+        function geraGrafico() {
+            $(document).ready(function () {
+                $.getJSON('../dados/generos.json', function(data) {
+                    const idUser = $('#users').val()
+                    const generos = data[idUser]['generos'].split(',')
+
+                    google.charts.load("current", {packages:["corechart"]});
+                    google.charts.setOnLoadCallback(drawChart);
+                    function drawChart() {
+                        var data = google.visualization.arrayToDataTable([
+                        ['Language', 'Speakers (in millions)'],
+                        ['Aventura',  parseInt(generos[0])],
+                        ['Animação', parseInt(generos[1])],
+                        ['Infantil', parseInt(generos[2])],
+                        ['Comédia',  parseInt(generos[3])],
+                        ['Fantasia', parseInt(generos[4])],
+                        ['Romance', parseInt(generos[5])],
+                        ['Drama', parseInt(generos[6])],
+                        ['Ação', parseInt(generos[7])],
+                        ['Crime', parseInt(generos[8])],
+                        ['Suspense', parseInt(generos[9])],
+                        ['Terror', parseInt(generos[10])],
+                        ['Mistério', parseInt(generos[11])],
+                        ['Ficção Científica', parseInt(generos[12])],
+                        ['Guerra', parseInt(generos[13])],
+                        ['Musical', parseInt(generos[14])],
+                        ['Documentário', parseInt(generos[15])],
+                        ['Faroeste', parseInt(generos[17])],
+                        ['Noir', parseInt(generos[18])],
+                        ]);
+
+                    var options = {
+                        legend: 'none',
+                        pieSliceText: 'label',
+                        title: 'Seus gêneros de filmes mais assistidos',
+                        pieStartAngle: 100,
+                    };
+
+                        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+                        chart.draw(data, options);
+                    }
+                })
+            })
+
+        }
+
+        $(document).ready(function () {
+            $.getJSON('../dados/dados.json', function(data) {
+                var options = '<option value=""> Escolha um usuário </option>'
+
+                $.each(data, function(key, val) {
+                    options += '<option value="' + (val.userId - 1) + '">' + val.userId + '</option>'
+                })
+
+                $('#users').html(options)
+            })
+        })
+
+        function listaFilmes() {
+            $(document).ready(function () {
+                const idUser = $('#users').val()
+                var filme = '<div></div>'
+                
+                $.getJSON('../dados/dados.json', function(data) {
+                    const filmes = data[idUser]['filmes'].split(',')
+                    var adicionados = []
+                    var count = 0
+                    $('#filmes').html("<p></p>")
+                    
+                    while (count != 10){
+                        const j = Math.floor(Math.random() * filmes.length);
+                        if (adicionados.indexOf(filmes[j]) == -1) {
+                            adicionados.push(filmes[j])
+                            getConfig(filmes[j].substring(2,11))
+                            count++;
+                        }
+                        
+                    }
+
+                    geraGrafico()
+                    
+                })
+            })
+        }
+    </script>
+
+
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">Filmes Recomendados</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent"></div>
+
+                <input class="form-control mr-sm-2" type="search" placeholder="Procurar Filme..." aria-label="Search" style="width: 200px;">
+                <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Pesquisar</button>
+            </div>
+        </nav>
+    </header>
+
+    <section>
+        <div class="container">
+            <div class="row">
+              <div class="col-sm-11">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <label class="input-group-text" for="user">Usuário</label>
+                    </div>
+                    <select class="custom-select" id="users">
+                    </select>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-info" type="button" onclick="listaFilmes()">Pesquisar</button>
+                      </div>
+                  </div>
+              </div>
+              </div>
+              
+              <div class="row" id="text"> 
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                    <div id="filmes"></div>
+                </div>
+              <div class="row">
+                <div class="col-sm-7">
+                    <div id="piechart"></div>
+                </div>
+                
+            </div>        
+        </div>
+    
+    </section>
+
+    <!-- ----------------------------- API -------------------------------------------------- -->
+    <script>
+        const APIKEY = '254c6407feb51fd7f478ec3e6b1abc23'
+        let baseURL = 'https://api.themoviedb.org/3/';
+        let configData = null;
+        let baseImageURL = null;
+        
+        let getConfig = function (id) {
+            let url = "".concat(baseURL, 'configuration?api_key=', APIKEY); 
+            fetch(url)
+            .then((result)=>{
+                return result.json();
+            })
+            .then((data)=>{
+                baseImageURL = data.images.secure_base_url;
+                configData = data.images;
+                console.log('config:', data);
+                console.log('config fetched');
+                runSearch(id)
+            })
+            .catch(function(err){
+                alert(err);
+            });
+        }
+        
+        let runSearch = function (keyword) {
+            let url = ''.concat(baseURL, 'find/',keyword,'?api_key=', APIKEY,'&language=en-US&external_source=imdb_id');
+            fetch(url)
+            .then(result=>result.json())
+            .then((data)=>{
+                
+                document.getElementById('text').innerHTML = '<h1>Filmes recomendados para você: </h1>'
+                document.getElementById('filmes').innerHTML += `<p><img src="https://image.tmdb.org/t/p/w200/${data['movie_results'][0]['poster_path']}" alt="Film" class="image"/> </p>`
+            })
+        }
+
+    </script>
+</body>
+</html>

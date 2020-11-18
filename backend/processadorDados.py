@@ -3,9 +3,10 @@ import random
 import operator
 import json
 
-filmes = pd.read_csv('arquivos/movies.csv', index_col=['movieId'])
-notas = pd.read_csv('arquivos/ratings.csv')
-links = pd.read_csv('arquivos/links.csv', index_col=['movieId'])
+
+filmes = pd.read_csv('./arquivos/movies.csv', index_col=['movieId'])
+notas = pd.read_csv('./arquivos/ratings.csv')
+links = pd.read_csv('./arquivos/links.csv', index_col=['movieId'])
 
 filmes['genres'] = filmes['genres'].str.split('|')
 
@@ -17,7 +18,9 @@ topGeneros = []
 generosA = []
 recomendados = []
 
+dados_generos = []
 dados = []
+
 
 def lista_generos():
     for generosLista in filmes['genres']:
@@ -98,9 +101,21 @@ def limpar_listas():
         generos[i] = 0
 
 
+def salva_estatisticas(userid):
+    aux = []
+    for i in generos.values():
+        aux.append(i)
+
+    stats_user = {'userId': userid, 'generos': str(aux).strip('[]')}
+    dados_generos.append(stats_user)
+
+
 def escreve_json():
-    with open('dados2.json', 'w') as f:
+    with open('./dados/dados.json', 'w') as f:
         json.dump(dados, f)
+
+    with open('./dados/generos.json', 'w') as f:
+        json.dump(dados_generos, f)
 
 
 def main():
@@ -109,8 +124,9 @@ def main():
     for i in range(610):
         limpar_listas()
         inserir_dados(i + 1)
+        salva_estatisticas(i + 1)
 
     escreve_json()
-        
+
 
 main()
