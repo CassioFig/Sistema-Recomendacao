@@ -14,33 +14,33 @@
     <script>
         function geraGrafico() {
             $(document).ready(function () {
-                $.getJSON('../dados/generos.json', function(data) {
+                $.getJSON('../DadosJSON/preferencias.json', function(data) {
                     const idUser = $('#users').val()
-                    const generos = data[idUser]['generos'].split(',')
+                    const stats = data[idUser]['stats']
 
                     google.charts.load("current", {packages:["corechart"]});
                     google.charts.setOnLoadCallback(drawChart);
                     function drawChart() {
                         var data = google.visualization.arrayToDataTable([
                         ['Language', 'Speakers (in millions)'],
-                        ['Aventura',  parseInt(generos[0])],
-                        ['Animação', parseInt(generos[1])],
-                        ['Infantil', parseInt(generos[2])],
-                        ['Comédia',  parseInt(generos[3])],
-                        ['Fantasia', parseInt(generos[4])],
-                        ['Romance', parseInt(generos[5])],
-                        ['Drama', parseInt(generos[6])],
-                        ['Ação', parseInt(generos[7])],
-                        ['Crime', parseInt(generos[8])],
-                        ['Suspense', parseInt(generos[9])],
-                        ['Terror', parseInt(generos[10])],
-                        ['Mistério', parseInt(generos[11])],
-                        ['Ficção Científica', parseInt(generos[12])],
-                        ['Guerra', parseInt(generos[13])],
-                        ['Musical', parseInt(generos[14])],
-                        ['Documentário', parseInt(generos[15])],
-                        ['Faroeste', parseInt(generos[17])],
-                        ['Noir', parseInt(generos[18])],
+                        ['Action',  parseInt(stats[1])],
+                        ['Adventure', parseInt(stats[2])],
+                        ['Animation', parseInt(stats[3])],
+                        ['Infantil',  parseInt(stats[4])],
+                        ['Comédia', parseInt(stats[5])],
+                        ['Crime', parseInt(stats[6])],
+                        ['Documentário', parseInt(stats[7])],
+                        ['Drama', parseInt(stats[8])],
+                        ['Fantasia', parseInt(stats[9])],
+                        ['Noir', parseInt(stats[10])],
+                        ['Terror', parseInt(stats[11])],
+                        ['Musical', parseInt(stats[13])],
+                        ['Mistério', parseInt(stats[14])],
+                        ['Romance', parseInt(stats[15])],
+                        ['Ficção Científica', parseInt(stats[16])],
+                        ['Suspense', parseInt(stats[17])],
+                        ['Guerra', parseInt(stats[18])],
+                        ['Faroeste', parseInt(stats[19])],
                         ]);
 
                     var options = {
@@ -59,11 +59,11 @@
         }
 
         $(document).ready(function () {
-            $.getJSON('../dados/dados.json', function(data) {
+            $.getJSON('../DadosJSON/recomendacao.json', function(data) {
                 var options = '<option value=""> Escolha um usuário </option>'
 
                 $.each(data, function(key, val) {
-                    options += '<option value="' + (val.userId - 1) + '">' + val.userId + '</option>'
+                    options += '<option value="' + (key) + '">' + (key + 1) + '</option>'
                 })
 
                 $('#users').html(options)
@@ -75,25 +75,18 @@
                 const idUser = $('#users').val()
                 var filme = '<div></div>'
                 
-                $.getJSON('../dados/dados.json', function(data) {
-                    const filmes = data[idUser]['filmes'].split(',')
-                    var adicionados = []
-                    var count = 0
+                $.getJSON('../DadosJSON/recomendacao.json', function(data) {
+                    const filmes = data[idUser]
+
                     $('#filmes').html("<p></p>")
                     
-                    while (count != 10){
-                        const j = Math.floor(Math.random() * filmes.length);
-                        if (adicionados.indexOf(filmes[j]) == -1) {
-                            adicionados.push(filmes[j])
-                            getConfig(filmes[j].substring(2,11))
-                            count++;
-                        }
-                        
+                    for (let i = 0; i < filmes.length; i++) {
+                        getConfig(filmes[i])   
                     }
 
-                    geraGrafico()
-                    
                 })
+
+                geraGrafico()
             })
         }
     </script>
