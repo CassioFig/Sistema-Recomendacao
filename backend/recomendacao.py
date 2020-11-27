@@ -60,7 +60,6 @@ verificados = verificados_json()
 
 
 def request(imdbid, s):
-
     url = requests.get(f"https://api.themoviedb.org/3/find/{imdbid}?api_key=254c6407feb51fd7f478ec3e6b1abc23"
                        "&language=en-US&external_source=imdb_id")
 
@@ -118,21 +117,24 @@ def recomendacao(userid, rod):
         movieid = random.choice(filmesPorGenero[0][genero])
 
         imdbid = retorna_imdbid(movieid)
-        if imdbid not in verificados:
-            salva_verificados(imdbid)
-        else:
-            continue
-
         pop = request(imdbid, "popularity")
 
-        if movieid not in assistidos and pop >= 30.000 and movieid not in recomendados:
+        if imdbid not in verificados and pop < 30.000:
+            salva_verificados(imdbid)
+            continue
+        elif imdbid in verificados:
+            continue
+
+        if movieid not in assistidos and movieid not in recomendados:
             if rod > 1:
                 if movieid not in recomendacao_users[userid]:
                     recomendados.append(imdbid)
+                    print('..')
 
                     count -= 1
 
             else:
+                print('..')
                 recomendados.append(imdbid)
 
                 count -= 1
@@ -141,15 +143,29 @@ def recomendacao(userid, rod):
 
 
 def main():
+    try:
+        for userid in range(len(recomendacao_users), 10):
+            recomendacao(userid, 1)
+            print('--')
+            recomendacao(userid, 2)
+            print('---')
+            recomendacao(userid, 3)
+            print('-----')
+            recomendacao(userid, 4)
+            print('-------')
+            recomendacao(userid, 4)
+            print('||||||||||')
 
-    for userid in range(len(recomendacao_users), 10):
-        recomendacao(userid, 1)
-        recomendacao(userid, 2)
-        recomendacao(userid, 3)
-        recomendacao(userid, 4)
-        recomendacao(userid, 4)
+    except:
+        print('erro')
+        if len(recomendacao_users[len(recomendacao_users) - 1]) < 10:
+            recomendacao_users.pop()
+
+            with open('../DadosJSON/recomendacao.json', 'w') as f:
+                json.dump(recomendacao_users, f)
+
+    finally:
+        main()
 
 
 main()
-
-
